@@ -27,7 +27,7 @@ export default async (hosts_id: string): Promise<IOperationResult> => {
     }
   }
 
-  let { type, url } = hosts
+  let { type, url, token } = hosts
 
   if (type !== 'remote') {
     return {
@@ -50,7 +50,21 @@ export default async (hosts_id: string): Promise<IOperationResult> => {
     if (url.startsWith('file://')) {
       new_content = await fs.promises.readFile(new URL(url), 'utf-8')
     } else {
-      let resp = await GET(url)
+      let resp: any
+      if(type === 'github_private_raw') {
+        if (!token) {
+          return {
+            success: false,
+            code: 'no_token',
+          }
+        }
+        let headers = {
+          'Authorization': `token ${token}`,
+        }
+        resp = await GET(url, null, { headers })
+      } else {
+        resp = await GET(url)
+      }
       new_content = resp.data
     }
   } catch (e: any) {

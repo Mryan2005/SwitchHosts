@@ -443,6 +443,7 @@ const EditHostsInfo = () => {
           </FormControl>
 
           {hosts?.type === 'remote' ? forRemote() : null}
+          {hosts?.type === 'github_private_raw' ? forGitHubPrivateRaw() : null}
           {hosts?.type === 'group' ? forGroup() : null}
           {hosts?.type === 'folder' ? forFolder() : null}
         </DrawerBody>

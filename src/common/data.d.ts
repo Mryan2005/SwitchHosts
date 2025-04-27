@@ -1,6 +1,6 @@
 import { ITreeNodeData } from './tree'
 
-export type HostsType = 'local' | 'remote' | 'group' | 'folder'
+export type HostsType = 'local' | 'remote' | 'group' | 'folder' | 'github_private_raw'
 export type FolderModeType = 0 | 1 | 2 // 0: 默认; 1: 单选; 2: 多选
 
 export interface IHostsListObject {
@@ -11,6 +11,7 @@ export interface IHostsListObject {
 
   // remote
   url?: string
+  token?: string  // 类似于GitHub的token
   last_refresh?: string
   last_refresh_ms?: number
   refresh_interval?: number // 单位：秒
