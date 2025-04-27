@@ -213,6 +213,103 @@ const EditHostsInfo = () => {
     )
   }
 
+  const forGitHubPrivateRaw = (): React.ReactElement => {
+    return (
+      <>
+        <FormControl className={styles.ln}>
+          <FormLabel>URL</FormLabel>
+          <Input
+            value={hosts?.url || ''}
+            onChange={(e) => onUpdate({ url: e.target.value })}
+            placeholder={lang.url_placeholder}
+            onKeyDown={(e) => e.key === 'Enter' && onSave()}
+          />
+        </FormControl>
+
+        <FormControl className={styles.ln}>
+          <FormLabel>Token</FormLabel>
+          <Input
+            value={hosts?.token || ''}
+            onChange={(e) => onUpdate({ url: e.target.value })}
+            placeholder={lang.url_placeholder}
+            onKeyDown={(e) => e.key === 'Enter' && onSave()}
+          />
+        </FormControl>
+
+        <FormControl className={styles.ln}>
+          <FormLabel>{lang.auto_refresh}</FormLabel>
+          <div>
+            <Select
+              value={hosts?.refresh_interval || 0}
+              onChange={(e) => onUpdate({ refresh_interval: parseInt(e.target.value) || 0 })}
+              style={{ minWidth: 120 }}
+            >
+              <option value={0}>{lang.never}</option>
+              <option value={60}>1 {lang.minute}</option>
+              <option value={60 * 5}>5 {lang.minutes}</option>
+              <option value={60 * 15}>15 {lang.minutes}</option>
+              <option value={60 * 60}>1 {lang.hour}</option>
+              <option value={60 * 60 * 24}>24 {lang.hours}</option>
+              <option value={60 * 60 * 24 * 7}>7 {lang.days}</option>
+            </Select>
+          </div>
+          {is_add ? null : (
+            <FormHelperText className={styles.refresh_info}>
+              <span>
+                {lang.last_refresh}
+                {hosts?.last_refresh || 'N/A'}
+              </span>
+              <Button
+                size="small"
+                variant="ghost"
+                disabled={is_refreshing}
+                onClick={() => {
+                  if (!hosts) return
+
+                  setIsRefreshing(true)
+                  actions
+                    .refreshHosts(hosts.id)
+                    .then((r) => {
+                      console.log(r)
+                      if (!r.success) {
+                        toast({
+                          status: 'error',
+                          description: r.message || r.code || 'Error!',
+                          isClosable: true,
+                        })
+                        return
+                      }
+
+                      toast({
+                        status: 'success',
+                        description: 'OK!',
+                        isClosable: true,
+                      })
+                      onUpdate({
+                        last_refresh: r.data.last_refresh,
+                        last_refresh_ms: r.data.last_refresh_ms,
+                      })
+                    })
+                    .catch((e) => {
+                      console.log(e)
+                      toast({
+                        status: 'error',
+                        description: e.message,
+                        isClosable: true,
+                      })
+                    })
+                    .finally(() => setIsRefreshing(false))
+                }}
+              >
+                {lang.refresh}
+              </Button>
+            </FormHelperText>
+          )}
+        </FormControl>
+      </>
+    )
+  }
+
   const renderTransferItem = (item: IHostsListObject): React.ReactElement => {
     return (
       <HStack>
